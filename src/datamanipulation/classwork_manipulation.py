@@ -1,11 +1,13 @@
 import os
+
+import pandas
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-
-
+from sklearn.datasets import load_boston
 
 from src.datamanipulation.data_preprocessing import make_col_positive
+from sklearn import preprocessing
 
 # TODO: Initialise a simple logger and set the desired format to be: TIME LEVEL-module-function-line number-message
 
@@ -27,59 +29,89 @@ def transform_data(data):
 
     data['C'].fillna((data['C'].median()), inplace=True)
 
-    data['D'].fillna((data['D'].median()), inplace=True)
+   # data['D'].fillna((data['D'].median()), inplace=True)
     #
-    # data['E'].fillna((data['E'].median()), inplace=True)
+    data['E'].fillna((data['E'].median()), inplace=True)
     #
-    # data['F'].fillna((data['F'].median()), inplace=True)
+    data['F'].fillna((data['F'].median()), inplace=True)
     #
-    # data['G'].fillna((data['G'].median()), inplace=True)
+    data['G'].fillna((data['G'].median()), inplace=True)
     #
-    # data['H'].fillna((data['H'].median()), inplace=True)
-
-
-    print(data.head(5))
+    data['H'].fillna((data['H'].median()), inplace=True)
 
 
 
-    #
-    # # TODO: drop column 'DAY_OF_WEEK'
-    #
-    # data.drop(columns = 'DAY_OF_WEEK')
-    #
-    # # TODO: Rename column 'WHEELS_OFF' to 'HAS_WHEELS'
-    # data.rename( columns = {'WHEELS_OFF': 'HAS_WHEELS'}, inplace = True)
-    #
-    #
-    #
-    # # TODO: Fill blanks in column 'AIR_SYSTEM_DELAY' with the average of the values
-    #
-    # mean= data["AIR_SYSTEM_DELAY"].mean()
-    # data["AIR_SYSTEM_DELAY"].fillna(mean, inplace=True)
-    #
-    #
-    #
-    #
-    # # TODO: Scale values between 0 and 1 in 'DEPARTURE_DELAY' and put them in 'DEPARTURE_DELAY_NORMALISED'
-    #
-    # data.plot(kind='bar', x='DEPARTURE_DELAY', y='HAS_WHEELS', color='red')
-    # plt.show()
-    #
-    # data["DEPARTURE_DELAY"] = ((data["DEPARTURE_DELAY"] - data["DEPARTURE_DELAY"].min()) / (
-    #             data["DEPARTURE_DELAY"].max() - data["DEPARTURE_DELAY"].min())) * 1
-    #
-    #
-    # data['DEPARTURE_DELAY_NORMALISED'] = data['DEPARTURE_DELAY']
-    #
-    # print(data["DEPARTURE_DELAY_NORMALISED"] )
-    #
-    # # TODO: Make 'ARRIVAL_DELAY' column positive using a function imported from data_preprocessing.py
-    #
-    #
-    #
-    # # TODO: take the log of the column DEPARTURE_DELAY
-    #
-    #
+
+
+
+
+
+# 1. TODO: Import the cars dataset and assign column names to the data.
+
+    data.rename(index=str, columns={"A": "MPG", "B": "CYLINDERS","C": "DISPLACEMENT","D": "HORSE_POWER","E": "WEIGHT","F": "ACCELERATION","G": "MODEL_YEAR","H": "ORIGIN","I": "CAR_NAME"},inplace = True)
+
+
+
+# 2. TODO: ‘Clean’ the empty cars dataset. Explore the variables to find data points that shouldn't be there. There are many ways to treat outliers and NaN values. These can be discussed in more detail next week!
+
+
+
+# 3. TODO: Assign features to X and target to y. We are trying to predict the MPG of the cars in this case.
+
+    columns = ['MPG', 'CYLINDERS', 'DISPLACEMENT', 'HORSE_POWER', 'WEIGHT', 'ACCELERATION', 'MODEL_YEAR', 'ORIGIN', 'CAR_NAME']
+    x = load_boston()
+    df = pd.DataFrame(x.data, columns=x.feature_names)
+    df["MPG"] = x.target
+    X = df.drop("MPG", 1)  # Feature Matrix
+    y = df["MPG"]  # Target Variable
+    # print(df.head(5))
+
+# 4. TODO: Normalise the columns in the data, i.e. scale all of the variables inearly between 0 and 1.
+
+    x = data.values  # returns a numpy array
+    min_max_scaler = preprocessing.MinMaxScaler()
+    x_scaled = min_max_scaler.fit_transform(x)
+    data = pandas.DataFrame(x_scaled)
+    # print(data.head(5))
+
+# 5. TODO: Split data into testing and training sets.
+
+
+
+# 6. TODO: Carry out a linear regression and calculate the RMSE and accuracy scores. What do these two values mean and when should we use them?
+
+
+
+# 7. TODO: Create a new set of X and y, with the original data. We are going to
+# repeat the process, but transforming the features, to see if we can achieve
+# better accuracy.
+
+
+
+# 8. TODO: Make transformations: Inverse Transform ‘displacement’ and ‘weight’,
+# Power (^2) transform ‘horsepower’ and ‘model year’ and log transform
+# ‘acceleration’. Why are we doing this, why transform the data at all?
+
+
+
+# 9. TODO: Normalise the columns in the transformed data.
+
+
+
+# 10. TODO: Split the transformed data into test and train sets.
+
+
+
+# 11. TODO: Fit a linear regression model on transformed data and calculate the
+# RMSE and accuracy scores. Can we compare it directly to the previous
+# results? If yes, why? If not, why?
+
+# 12. TODO: BONUS: So far we have improved the score slightly. Try different
+# transformations and see if you can improve this score further. The best
+# score is the winner. Is there a way to automate this? How can we be smarter
+# about picking the best transformations for the data
+
+
 
     return data
 
@@ -97,7 +129,9 @@ if __name__ == "__main__":
     
     Please do not spend more than 3 hours on this.
     '''
-    car_data = pd.read_fwf('../../data/auto-mpg-data.txt', names=['A', 'B', 'C', 'D', 'E', 'F','G','H','CAR_NAME'])
+    car_data = pd.read_fwf('../../data/auto-mpg-data.txt', names=['A', 'B', 'C', 'D', 'E', 'F','G','H','I'])
+
+
     # columns = ['mpg', 'cylinders', 'displacement', 'horsepower', 'weight', 'acceleration', 'model_year', 'origin',
     #            'car_name']
     # df = pd.read_fwf("../../data/auto-mpg-data.txt", names=columns)
